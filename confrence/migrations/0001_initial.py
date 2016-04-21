@@ -18,7 +18,17 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('confrenceName', models.CharField(max_length=30)),
+                ('startDate', models.DateField()),
+                ('endDate', models.DateField()),
                 ('oraganiser', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Reviewr',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('confrence', models.ForeignKey(to='confrence.ConfrenceModel', null=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
     ]

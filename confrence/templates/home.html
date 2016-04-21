@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2> Available Confrences in System are .. <h2>
+<table border = '1px'>
+	<tr>
+		<td>Confrence</td>
+		<td>StartDate</td>
+		<td>EndDate</td>
+		<td>Register</td>
+	</tr>
+{% for confrence in confrences %}
+	<tr>
+		<td>{{confrence.confrenceName}}</td>
+		<td>{{confrence.startDate|date:"D d M Y"}}</td>
+		<td>{{confrence.endDate|date:"D d M Y"}}</td>
+		<td>Register</td>
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}
+

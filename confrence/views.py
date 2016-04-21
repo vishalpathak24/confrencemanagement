@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.template.context_processors import request
 from django.http.response import HttpResponse, HttpResponseRedirect
-from confrence.models import RegisterForm
+from confrence.models import RegisterForm, ConfrenceModel
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -10,7 +10,9 @@ def index(request):
 
 @login_required
 def home(request):
-    return HttpResponse("Hello Registered User");
+    confreces = ConfrenceModel.objects.all()
+    return render(request,'home.html',{'confrences':confreces})
+    
 
 
 def register(request):
