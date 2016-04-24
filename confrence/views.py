@@ -10,8 +10,9 @@ def index(request):
 
 @login_required
 def home(request):
-    confreces = ConfrenceModel.objects.all()
-    return render(request,'home.html',{'confrences':confreces})
+    org_confrences = ConfrenceModel.objects.filter(organizer_id=request.user.id)
+    rev_confrences = ConfrenceModel.objects.all()
+    return render(request,'home.html',{'org_confrences':org_confrences,'rev_confrences':rev_confrences})
     
 
 
