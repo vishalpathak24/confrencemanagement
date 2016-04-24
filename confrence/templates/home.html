@@ -13,18 +13,18 @@
 		</tr>
 	{% for org_confrence in org_confrences %}
 		<tr>
-			<td>{{org_confrence.confrenceName}}</td>
+			<td><a href="{% url 'confrence-home' %}{{org_confrence.id}}">{{org_confrence.confrenceName}}</a></td>
 			<td>{{org_confrence.startDate|date:"D d M Y"}}</td>
 			<td>{{org_confrence.endDate|date:"D d M Y"}}</td>
-			<td><a href="{% url confrence-edit %}/{{org_confrence.id}}">Edit</a></td>
+			<td><a href="{% url 'confrence-edit' %}{{org_confrence.id}}">Edit</a></td>
 		</tr>
 	{% endfor %}
 	</table>
 {% endif %}
 
-{% if rev_confrences %}
+{% if all_confrences %}
 	<br>
-	<h3> Confrence Reviewed By You </h3>
+	<h3> All Confrences </h3>
 	<table border = '1px'>
 		<tr>
 			<td>Confrence</td>
@@ -32,12 +32,12 @@
 			<td>EndDate</td>
 			<td>Register</td>
 		</tr>
-	{% for rev_confrence in rev_confrences %}
+	{% for all_confrence in all_confrences %}
 		<tr>
-			<td>{{rev_confrence.confrenceName}}</td>
-			<td>{{rev_confrence.startDate|date:"D d M Y"}}</td>
-			<td>{{rev_confrence.endDate|date:"D d M Y"}}</td>
-			<td>Review</td>
+			<td><a href="{% url 'confrence-home' %}{{all_confrence.id}}">{{all_confrence.confrenceName}}</a></td>
+			<td>{{all_confrence.startDate|date:"D d M Y"}}</td>
+			<td>{{all_confrence.endDate|date:"D d M Y"}}</td>
+			<td><a href="{% url 'confrence-home' %}{{all_confrence.id}}">Veiw</a></td>
 		</tr>
 	{% endfor %}
 	</table>

@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url('^user/',include('django.contrib.auth.urls')),
     url('^user/',include(confrence.urls)),
+    url('^confrence/',include(confrence.urls)),
     
 ]

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Edit Confrence</h2>
+{% if form.errors %}
+{{topicformset.errors}}
+{% endif %}
+
+<form method="post" action="{% url 'confrence-edit' %}{{confrence.id}}/">
+{% csrf_token %}
+{{ topicformset.management_form }}
+<table border='1px'>
+	<tr><td>{{confrenceform}}</td></tr>
+	{% for form in topicformset %}         
+	      {{ form.id }}
+	<tr><td>{{ form }}</td></tr>
+	{% endfor %}
+</table>	    
+<input type="submit" value="Save" />	
+</form>
+
+{% endblock %}
