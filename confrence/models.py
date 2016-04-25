@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.forms.models import ModelForm
 from django.template.defaultfilters import default
-
+from django import forms
 # Create your models here.
  
 
@@ -23,6 +23,13 @@ class Topic(models.Model):
     def __str__(self):
         return self.topicName    
 
+class Author(models.Model):
+    user = models.ForeignKey(User,on_delete = models.CASCADE)
+    confrence = models.ForeignKey(Confrence,on_delete = models.CASCADE)
+    topics = models.ManyToManyField(Topic)
+    def __str__(self):
+        return self.user.first_name+" "+self.user.last_name+" Author of"+self.confrence.__str__()  
+    
 class Reviewr(models.Model):
     user = models.ForeignKey(User,on_delete = models.CASCADE) #removes User from reviewers
     confrence = models.ForeignKey(Confrence,on_delete = models.CASCADE)
@@ -31,7 +38,7 @@ class Reviewr(models.Model):
         #only confrence having topic must be added
         
     def __str__(self):
-        return "Reviewer of"+self.confrence.__str__()+" "+self.user.first_name+" "+self.user.last_name
+        return self.user.first_name+" "+self.user.last_name+"Reviewer of"+self.confrence.__str__()
     
 
 
@@ -46,4 +53,13 @@ class ConfrenceEditForm(ModelForm):
     class Meta:
         model = Confrence
         fields = ['confrenceName','startDate','endDate']
+
+
+class AuthorEditForm(ModelForm):
+    def __init__(self,confrence, *args, **kwargs):
+        super(AuthorEditForm, self).__init__(*args, **kwargs)
+        self.fields['topics']=forms.ModelMultipleChoiceField(queryset=confrence.topic_set.all(),widget=forms.CheckboxSelectMultiple(),required=True)
+    class Meta:
+        model = Author
+        fields=['user','topics']
     
