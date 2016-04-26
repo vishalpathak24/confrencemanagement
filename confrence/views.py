@@ -51,22 +51,31 @@ def confrence_home(request,confrenceid="-1"):
     user=request.user
     author_user=[]
     reviewr_user=[]
+    #Changing options on Basis of user privilages
     is_auth=False
     if authors:
         for author in authors:
             if author.user.username == user.username:
-	        is_auth=True
+                is_auth=True
             author_user.append(author.user) #if author exist find user for this author
         authors = author_user #if author exist find user for this author
-    if reviewrs:
-	for reviewr in reviewrs:
-	    reviewr_user.append(reviewr.user)
-	reviewrs= reviewr_user
+    
+    review_option = False;
+    if reviewrs:	
+        for reviewr in reviewrs:
+            reviewr_user.append(reviewr.user)
+            if (reviewr.user == request.user):
+                review_option = True
+                request.session['review-confrence']=confrence.id #Setting Session for confrence
+        reviewrs= reviewr_user
+    
     edit_option = False;
     if(organizer == request.user):
         edit_option=True;
+        request.session['org-confrence']=confrence.id #Setting Session for confrence
+    
     if(confrence):
-        return render(request,'confrence/home.html',{'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'user':user,'is_auth':is_auth})  
+        return render(request,'confrence/home.html',{'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'review_option':review_option,'user':user,'is_auth':is_auth})  
         
     return HttpResponseRedirect("/user/home")
 
@@ -126,13 +135,9 @@ def author_edit(request,confrenceid="-1",authorid="-1"):
 def reviewr_edit(request,confrenceid="-1",authorid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
     organizer = confrence.organizer
-    #author_form=modelform_factory(Author,fields={'user','topics'},widgets={"topics":forms.CheckboxSelectMultiple()})
-    #author_form.topics = forms.ChoiceField(widget=forms.CheckboxSelectMultiple(),required=True,choices=topics)
-    #print author_form
     user=request.user
     if(confrence and organizer == request.user):
         if request.method == 'POST':      
-            #form=author_form(request.POST)
             form=ReviewerEditForm('-1',user,request.POST)
             if form.is_valid():
                 reviewr = form.save(commit=False)
@@ -140,16 +145,17 @@ def reviewr_edit(request,confrenceid="-1",authorid="-1"):
                 reviewr.save()
                 return  HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
         else:
-            #form=author_form()
             form=ReviewerEditForm(confrence,user)
-	    
-	    form.fields['user'].queryset = form.fields['user'].queryset.exclude(username=user.username)
-            form.fields['user'].queryset = form.fields['user'].queryset.exclude(username='admin')
-        #form.topics=forms.ChoiceField(widget=forms.CheckboxSelectMultiple(),required=True,choices=topics)
-        #form.topics(widget=forms.CheckboxSelectMultiple(),required=True)
+               
+        form.fields['user'].queryset = form.fields['user'].queryset.exclude(username=user.username)
+        form.fields['user'].queryset = form.fields['user'].queryset.exclude(username='admin')
         return render(request,'confrence/revieweredit.html',{'form':form,'confrence':confrence})
     else:           
         return HttpResponseRedirect("/user/home")
+
+#Submission
+def submission_home(request):
+    return HttpResponse("Submission Home");
 
 def submission_form(request,confrenceid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)

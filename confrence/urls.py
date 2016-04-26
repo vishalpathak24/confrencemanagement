@@ -16,6 +16,8 @@ urlpatterns = [
     url(r'^confrence_edit/editReviewr/(?P<confrenceid>[0-9]+)/(?P<authorid>[0-9]+)$',views.reviewr_edit),
     url(r'^confrence_edit/subUpload/$',views.submission_form,name='sub-upload'),
     url(r'^confrence_edit/subUpload/(?P<confrenceid>[0-9]+)/$',views.submission_form),
+    url(r'^submission_home/$',views.submission_home,name='submission-home'),
     url(r'^viewsub/$',views.view_file,name='view-file'),
     url(r'^viewtest/$',views.view_file1,name='view-file1'),
+    
 ]
