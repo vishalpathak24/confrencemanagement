@@ -57,7 +57,7 @@
 			<td><a href="{% url 'confrence-home' %}{{all_confrence.id}}">{{all_confrence.confrenceName}}</a></td>
 			<td>{{all_confrence.startDate|date:"D d M Y"}}</td>
 			<td>{{all_confrence.endDate|date:"D d M Y"}}</td>
-			<td><a href="{% url 'sub-upload' %}{{all_confrence.id}}">Add Submission</a></td>
+			<td><a href="{% url 'sub-upload' %}{{all_confrence.id}}/1">Add Submission</a></td>
 		</tr>
 	{% endfor %}
 	</table>

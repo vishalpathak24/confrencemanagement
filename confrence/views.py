@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.template.context_processors import request
 from django.http.response import HttpResponse, HttpResponseRedirect
-from confrence.models import RegisterForm, Confrence, Topic, Upload, ConfrenceEditForm,\
-    Author, AuthorEditForm, ReviewerEditForm, UploadForm, Reviewr
+from confrence.models import RegisterForm, Confrence, Topic, Reviewr, Upload, Submission, ConfrenceEditForm,\
+    Author, ReviewerEditForm, UploadForm, SubmissionForm, PaperSubmissionForm, PosterSubmissionForm
 from django.contrib.auth.decorators import login_required
 from urllib2 import HTTPRedirectHandler
 from django.forms.models import modelformset_factory, inlineformset_factory,\
@@ -106,7 +106,7 @@ def confrence_edit(request,confrenceid="-1"):
         
         
     return HttpResponseRedirect("/user/home")
-
+"""
 @login_required
 def author_edit(request,confrenceid="-1",authorid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
@@ -131,7 +131,7 @@ def author_edit(request,confrenceid="-1",authorid="-1"):
         return render(request,'confrence/authoredit.html',{'form':form,'confrence':confrence})
     else:           
         return HttpResponseRedirect("/user/home")
-
+"""
 @login_required
 def reviewr_edit(request,confrenceid="-1",authorid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
@@ -173,27 +173,53 @@ def submissions_home(request):
     else:
         return HttpResponse("submission_home");
 
-def submission_form(request,confrenceid="-1"):
+def submission_form(request,confrenceid="-1",submissiontype="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
-    got=1
+    user=request.user
+    if submissiontype == "-1":
+       return HttpResponse(" Form type is not correct")
     if request.method=="POST":
-        form = UploadForm(request.POST, request.FILES) 
-	got=form.is_valid()      
+        if submissiontype == "1":
+	   form = PaperSubmissionForm(request.POST, request.FILES)
+	if submissiontype == "2":
+	   form = PosterSubmissionForm(request.POST, request.FILES)      
         if form.is_valid():
+	    aut = Author()
+	    aut.user = request.user
+	    aut.confrence = confrence
+	    aut.save()
 	    upload=form.save(commit=False)
-            upload.upl_date=datetime.date.today()
-            upload.save()  
-            return HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
-    form=UploadForm()
-    return render(request,'confrence/upload.html',{'form':form,'confrence':confrence,'got':got})
+	    upload.author = aut
+	    upload.confrence = confrence
+        upload.reviewed = False
+        upload.status = "Submitted"
+        upload.upl_date = datetime.date.today()
+        upload.save()  
+        return HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
+    if submissiontype == "1":
+    	form=PaperSubmissionForm()
+    if submissiontype == "2":
+        form=PosterSubmissionForm()
+    form.fields['topic'].queryset = confrence.topic_set.all()
+    return render(request,'confrence/upload.html',{'form':form,'confrence':confrence,'submissiontype':submissiontype})
+    return HttpResponse("this is not good"+str(submissiontype)+str(submissiontype == "1"))
+    
+   
 
-def view_file1(request):
-    return render(request,'confrence/download.html',{})
+def view_file1(request,confrenceid="-1"):
+    confrence = Confrence.objects.get(id=confrenceid)
+    user=request.user
+    subconfrence = Submission.objects.all()
+    return render(request,'confrence/download.html',{"confrence":confrence,"subconfrence":subconfrence,"user":user})
 
-def view_file(request):
-    fls=Upload.objects.get(name="first")
-    filename = fls.fl.name.split('/')[-1]
-    response = HttpResponse(fls.fl, content_type='text/plain')
-    response['Content-Disposition'] = 'attachment; filename=%s' % filename
-    return response
+def view_file(request,submissionid="-1"):
+    if submissionid == "-1":
+	return HttpResponse("sorry this file not found")
+    else:
+	
+	fls=Submission.objects.get(id=submissionid)
+        filename = fls.subFile.name.split('/')[-1]
+        response = HttpResponse(fls.subFile, content_type='text/plain')
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
 	

@@ -37,19 +37,6 @@
 	{% endif %}
 	
 	<br>
-	
-	{% if authors %}
-		<h3> Authors in confrence </h3>
-		<table>
-		{% for author in authors %}
-			<tr><td>{{author.first_name}}</td></tr>
-		{% endfor %}
-		</table>
-	{% else %}
-		<h3> None of the Authors has been added by organizer </h3>
-	{% endif %}
-	
-	<br>
 	{% if reviewrs %}
 		<h3>Reviewers in Confrence </h3>
 		<table>		
@@ -63,6 +50,13 @@
 	
 	
 	<br>
+
+	{% if is_auth %}
+		<h3><a href="{% url 'sub-upload' %}{{confrence.id}}/1">Paper Submission for conference</a><h3><br>
+		<h3><a href="{% url 'sub-upload' %}{{confrence.id}}/2">Poster Submission for conference</a><h3><br>
+		<a href="{% url 'view-file1' %}{{confrence.id}}">view your submission</a>
+	{% endif %}
+	
 	{% if edit_option %} 
 	<!-- Edit option only for organizer of confrence --!>
 		<a href="{% url 'confrence-edit' %}{{confrence.id}}">Edit</a>

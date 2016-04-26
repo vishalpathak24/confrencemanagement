@@ -27,7 +27,6 @@ class Topic(models.Model):
 class Author(models.Model):
     user = models.ForeignKey(User,on_delete = models.CASCADE)
     confrence = models.ForeignKey(Confrence,on_delete = models.CASCADE)
-    topics = models.ManyToManyField(Topic)
     def __str__(self):
         return self.user.first_name+" "+self.user.last_name+" Author of"+self.confrence.__str__()  
 
@@ -58,6 +57,17 @@ class Submission(models.Model):
     topic = models.ForeignKey(Topic,on_delete = models.CASCADE,null=True)
     reviewed = models.BooleanField(default=False)
 
+    
+    def __str__(self):
+        return self.title+" "+self.author.user.first_name+" "+self.confrence.__str__()
+
+class PaperSubmission(Submission):
+    filesize=models.IntegerField(null=True)    
+   
+class PosterSubmission(Submission):
+    filesize=models.IntegerField(null=True)  
+
+
 class Review(models.Model):
     submission = models.ForeignKey(Submission,on_delete = models.CASCADE)
     reviewr = models.ForeignKey(Reviewr,on_delete = models.CASCADE)
@@ -76,7 +86,7 @@ class ConfrenceEditForm(ModelForm):
     class Meta:
         model = Confrence
         fields = ['confrenceName','startDate','endDate']
-
+"""
 class AuthorEditForm(ModelForm):
     def __init__(self,confrence, *args, **kwargs):
         super(AuthorEditForm, self).__init__(*args, **kwargs)
@@ -85,7 +95,7 @@ class AuthorEditForm(ModelForm):
     class Meta:
         model = Author
         fields=['user','topics']
-
+"""
 class ReviewerEditForm(ModelForm):
     def __init__(self,confrence,current_user, *args, **kwargs):
         super(ReviewerEditForm, self).__init__(*args, **kwargs)
@@ -100,9 +110,20 @@ class UploadForm(ModelForm):
     class Meta:
 	model=Upload
 	fields=['name','fl']
-"""
+
 class SubmissionForm(ModelForm):
     class Meta:
         model = Submission
 	fields = ['subFile','title','topic']
-"""	
+
+class PaperSubmissionForm(ModelForm):
+    class Meta:
+        model = PaperSubmission
+	fields = ['subFile','title','topic']
+
+class PosterSubmissionForm(ModelForm):
+    class Meta:
+	model = PosterSubmission
+	fields = ['subFile','title','topic']
+
+	
