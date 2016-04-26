@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.forms.models import ModelForm
 from django.template.defaultfilters import default
 from django import forms
+from twisted.protocols.amp import MAX_VALUE_LENGTH
 # Create your models here.
  
 
@@ -55,11 +56,13 @@ class Submission(models.Model):
     subFile = models.FileField(upload_to="files/",null=True)
     upl_date= models.DateField(null=True)#blank=False,null=True)
     topic = models.ForeignKey(Topic,on_delete = models.CASCADE,null=True)
+    reviewed = models.BooleanField(default=False)
 
 class Review(models.Model):
     submission = models.ForeignKey(Submission,on_delete = models.CASCADE)
     reviewr = models.ForeignKey(Reviewr,on_delete = models.CASCADE)
     comment = models.CharField(max_length=30)
+    score = models.IntegerField()
 
 
 #Registration form for user
@@ -86,8 +89,8 @@ class AuthorEditForm(ModelForm):
 class ReviewerEditForm(ModelForm):
     def __init__(self,confrence,current_user, *args, **kwargs):
         super(ReviewerEditForm, self).__init__(*args, **kwargs)
-	if confrence != '-1':
-        	self.fields['topics']=forms.ModelMultipleChoiceField(queryset=confrence.topic_set.all(),widget=forms.CheckboxSelectMultiple(),required=True)
+        if confrence != '-1':
+            self.fields['topics']=forms.ModelMultipleChoiceField(queryset=confrence.topic_set.all(),widget=forms.CheckboxSelectMultiple(),required=True)
 	#	self.fields['user'].queryset = self.fields['user'].queryset.exclude(id=current_user.id)
     class Meta:
         model = Reviewr

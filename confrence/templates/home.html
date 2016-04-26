@@ -22,6 +22,26 @@
 	</table>
 {% endif %}
 
+{% if rev_confrences %}
+	<h3> Confrence Reviewed By You </h3>
+	<table border = '1px'>
+		<tr>
+			<td>Confrence</td>
+			<td>StartDate</td>
+			<td>EndDate</td>
+			<td>Register</td>
+		</tr>
+	{% for rev_confrence in rev_confrences %}
+		<tr>
+			<td><a href="{% url 'confrence-home' %}{{rev_confrence.id}}">{{rev_confrence.confrenceName}}</a></td>
+			<td>{{rev_confrence.startDate|date:"D d M Y"}}</td>
+			<td>{{rev_confrence.endDate|date:"D d M Y"}}</td>
+			<td><a href="{% url 'confrence-home' %}{{rev_confrence.id}}">View</a></td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endif %}
+
 {% if all_confrences %}
 	<br>
 	<h3> All Confrences </h3>

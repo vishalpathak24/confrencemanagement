@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.template.context_processors import request
 from django.http.response import HttpResponse, HttpResponseRedirect
 from confrence.models import RegisterForm, Confrence, Topic, Upload, ConfrenceEditForm,\
-    Author, AuthorEditForm, ReviewerEditForm, UploadForm
+    Author, AuthorEditForm, ReviewerEditForm, UploadForm, Reviewr
 from django.contrib.auth.decorators import login_required
 from urllib2 import HTTPRedirectHandler
 from django.forms.models import modelformset_factory, inlineformset_factory,\
@@ -19,8 +19,10 @@ def index(request):
 @login_required
 def home(request):
     org_confrences = Confrence.objects.filter(organizer_id=request.user.id)
+    my_reviwers = Reviewr.objects.filter(user_id=request.user.id)
+    rev_confrences = [ my_reviewer.confrence for my_reviewer in my_reviwers]
     all_confrences = Confrence.objects.all()
-    return render(request,'home.html',{'org_confrences':org_confrences,'all_confrences':all_confrences})
+    return render(request,'home.html',{'org_confrences':org_confrences,'rev_confrences':rev_confrences,'all_confrences':all_confrences})
     
 
 
@@ -28,7 +30,6 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            
             new_user = form.save(commit=False)
             raw_paswd = new_user.password
             new_user.set_password(raw_paswd)
@@ -143,6 +144,7 @@ def reviewr_edit(request,confrenceid="-1",authorid="-1"):
                 reviewr = form.save(commit=False)
                 reviewr.confrence = confrence
                 reviewr.save()
+                form.save_m2m()
                 return  HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
         else:
             form=ReviewerEditForm(confrence,user)
@@ -154,8 +156,22 @@ def reviewr_edit(request,confrenceid="-1",authorid="-1"):
         return HttpResponseRedirect("/user/home")
 
 #Submission
-def submission_home(request):
-    return HttpResponse("Submission Home");
+def submissions_home(request):
+    if request.session['review-confrence']: #reviewer viewing submissions for confrence
+        confrenceid = request.session['review-confrence']
+        myreviewr = Reviewr.objects.get(user_id=request.user.id,confrence_id = confrenceid)
+        if myreviewr:
+            topics = myreviewr.topics.all()
+            #topicsid = [topic.id for topic in topics]
+            confrence = Confrence.objects.get(id = confrenceid)
+            toreview_list = confrence.submission_set.filter(topic__in = topics,reviewed = False)
+            if(toreview_list):
+                return HttpResponse("To review List is present");
+            else:
+                return HttpResponse("Nothing to review");
+                
+    else:
+        return HttpResponse("submission_home");
 
 def submission_form(request,confrenceid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
