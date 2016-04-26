@@ -39,8 +39,9 @@
 	
 	<br>
 	{% if is_auth %}
-		<a href="{% url 'sub-upload' %}{{confrence.id}}">Upload submission</a>
-		<a href="{% url 'view-file1' %}">view your submission</a>
+		<h3><a href="{% url 'sub-upload' %}{{confrence.id}}/1">Paper Submission for conference</a><h3><br>
+		<h3><a href="{% url 'sub-upload' %}{{confrence.id}}/2">Poster Submission for conference</a><h3><br>
+		<a href="{% url 'view-file1' %}{{confrence.id}}">view your submission</a>
 	{% endif %}
 	{% if edit_option %}
 	{% if authors %}
@@ -70,7 +71,7 @@
 	<!-- Edit option only for organizer of confrence --!>
 	
 		<a href="{% url 'confrence-edit' %}{{confrence.id}}">Edit</a>
-		<a href="{% url 'author-edit' %}{{confrence.id}}">Add Author</a>
+		
 		<a href="{% url 'reviewr-edit' %}{{confrence.id}}">Add remove Reviewer</a>
 	{% endif %}
 {% else %}
