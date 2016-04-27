@@ -57,6 +57,10 @@
 										<td>{{org_confrence.endDate|date:"D d M Y"}}</td>
 										<td><a href="{% url 'confrence-edit' %}{{org_confrence.id}}">Edit</a></td>
 									</tr>
+									<tr>
+										<td>Link for user register</td>
+										<td>127.0.0.1:8000/user/register/1</td>
+									</tr>
 								{% endfor %}
 								</table>
 							{% else %}	
@@ -85,6 +89,7 @@
 							{% endif %}
 						</section>
 						<section>
+							<!----
 							{% if all_confrences %}
 								<br>
 								<h3> All Confrences </h3>
@@ -104,7 +109,7 @@
 									</tr>
 								{% endfor %}
 								</table>
-							{% endif %}
+							{% endif %}  -->
 
 							{% endblock %}
 

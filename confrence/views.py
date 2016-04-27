@@ -68,6 +68,7 @@ def register(request,confrenceid="-1"):
 def confrence_home(request,confrenceid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
     organizer = confrence.organizer
+    pcChair = confrence.pcChair
     topics = confrence.topic_set.all()
     reviewrs= confrence.reviewr_set.all()
     user=request.user
@@ -88,10 +89,11 @@ def confrence_home(request,confrenceid="-1"):
         edit_option=True;
         request.session['org-confrence']=confrence.id #Setting Session for confrence
     is_auth = False
-    if not(review_option or edit_option):
+    if not(review_option or edit_option or user == pcChair):
         is_auth = True    
     if(confrence):
-        return render(request,'confrence/home.html',{'is_auth':is_auth,'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'review_option':review_option,'user':user})  
+        return render(request,'confrence/home.html',{'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'review_option':review_option,'user':user,'is_auth':is_auth,'pcChair':pcChair})  
+
         
     return HttpResponseRedirect("/user/home")
 
@@ -158,7 +160,7 @@ def reviewr_edit(request,confrenceid="-1",authorid="-1"):
             formset=reviewerFormSet(request.POST, request.FILES,instance=confrence)#ReviewerEditForm('-1',user,request.POST)
             if formset.is_valid():
                 formset.save()
-                return  HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
+                return  HttpResponseRedirect("/confrence/confrence_home"+"/"+`confrence.id`)
         else:
             formset=reviewerFormSet(form_kwargs={'confrence': confrence,'current_user':user},instance=confrence)#ReviewerEditForm(confrence,user)
               

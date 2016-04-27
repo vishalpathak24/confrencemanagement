@@ -64,23 +64,25 @@
 							</table>
 							<br>
 							
-							
-							
-							<br>
-							{% if reviewrs %}
-								<h3>Reviewers in Confrence </h3>
-								<table>		
-								{% for reviewr in reviewrs %}
-									<tr><td>{{reviewr.first_name}}</td></tr>
-								{% endfor %}
-								</table>
-							{% else %}
-								<h3> none reviewers </h3>
+							{% if user == pcChair %}
+								<a href="{% url 'accept-reject' %}{{confrence.id}}/1" class="button special">Accept/Reject paper</a>
 							{% endif %}
-							
-							
+							{% if edit_option %}
 							<br>
-
+								{% if reviewrs %}
+									<h3>Reviewers in Confrence </h3>
+									<table>		
+									{% for reviewr in reviewrs %}
+										<tr><td>{{reviewr.first_name}}</td></tr>
+									{% endfor %}
+									</table>
+								{% else %}
+									<h3> none reviewers </h3>
+								{% endif %}
+							
+							{% endif %}
+							<br>
+						
 							{% if is_auth %}
 								
 								<ul class="actions">
@@ -94,7 +96,8 @@
 							{% if edit_option %} 
 							    <ul class="actions">
 								<li><a href="{% url 'confrence-edit' %}{{confrence.id}}" class="button special">Edit Conference</a></li>
-								<li><a href="{% url 'reviewr-edit' %}{{confrence.id}}" class="button special">Add/Remove Reviewer</a></li>
+								<li><a href="{% url 'reviewr-edit' %}{{confrence.id}}" class="button special">Add/Remove Reviewer</a></li></ul>
+								<ul class="actions">
 								<li><a href="{% url 'reviewr-assgn' %}{{confrence.id}}" class="button special">Assign Reviewer</a></li>
 							    </ul>
 								
