@@ -11,7 +11,7 @@ from twisted.protocols.amp import MAX_VALUE_LENGTH
 class Confrence(models.Model):
     confrenceName = models.CharField(max_length=30)
     organizer = models.ForeignKey(User,on_delete = models.SET_NULL,null=True)
-    
+    pcChair = models.ForeignKey(User,on_delete = models.SET_NULL,related_name='+',null=True)
     startDate = models.DateField(blank=False)
     endDate = models.DateField(blank=False)
         

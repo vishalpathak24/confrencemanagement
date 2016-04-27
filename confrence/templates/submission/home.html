@@ -1,41 +1,105 @@
-{% extends "base.html" %}
 
-{% block content %}
-<h2>
-{% if rev_topics %}
-	Welcome reviewer of confrence <br> Your topics are :
-</h2>
-	<table>
-	{% for topic in rev_topics %}
-	<tr><td>{{topic.topicName}}</td></tr>
-	{% endfor %}
-	</table>	
-{% else %}
-	Welcome organizer of confrence
-</h2>
-{% endif %} 
 
-{% if to_review_list %}
-<h3> Following are submissions to review </h3>
-	<table border="1px">
-	<tr>
-		<td>Title</td> 
-		<td>Topic</td>
-		<td>Type</td>
-		<td>Download Link</td>
-		<td>Review</td>
-	</tr>
-	{% for sub in to_review_list %}
-	<tr>
-		<td>{{sub.title}}</td> 
-		<td>{{sub.topic}}</td>
-		<td>{{sub.type}}</td>
-		<td><a href="{% url 'view-file' %}{{sub.id}}">Download</td>
-		<td><a href="">Review</td>
-	</tr>
-	{% endfor %}
-	</table>
-{% else %}
-<h3> No submission assigned to you </h3>
-{% endif %}
-{% endblock %}
+
+
+
+<!DOCTYPE HTML>
+<!--
+    Prism by TEMPLATED
+    templated.co @templatedco
+    Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+{% load staticfiles %}
+<html>
+    <head>
+        <title>Easy Chair Login </title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+        <link rel="stylesheet" href="{% static "css/main.css" %}"/>
+        <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+    </head>
+    <body>
+
+        <!-- Banner -->
+            <section id="banner">
+                <div class="inner split">
+                    <section>
+                        <h2> EasyChair Assign Reviewer </h2>
+                    </section>
+                    <section>
+                        <ul class="actions">
+                            <li><a href="/user/logout" class="button special">Logout</a></li>
+                        </ul>
+                    </section>
+                </div>
+            </section>
+
+        <!-- One -->
+            <section id="one" class="wrapper">
+                <div class="inner split">
+                    <section>
+                        
+                       
+                        {% block content %}
+						<h3>
+						{% if rev_topics %}
+							Welcome reviewr of confrence <br> Your topics are :
+						</h3>
+							<table>
+							{% for topic in rev_topics %}
+							<tr><td>{{topic.topicName}}</td></tr>
+							{% endfor %}
+							</table>	
+						{% else %}
+						<h3>	Welcome organizer of confrence </h3>
+						
+						{% endif %} 
+
+						{% if to_review_list %}
+						<h3> Following are submissions to review </h3>
+							<table border="1px">
+							<tr>
+								<td>Title</td> 
+								<td>Topic</td>
+								<td>Type</td>
+								<td>Download Link</td>
+								<td>Review</td>
+							</tr>
+							{% for sub in to_review_list %}
+							<tr>
+								<td>{{sub.title}}</td> 
+								<td>{{sub.topic}}</td>
+								<td>{{sub.type}}</td>
+								<td><a href="{% url 'view-file' %}{{sub.id}}">Download</td>
+								<td><a href="">Review</td>
+							</tr>
+							{% endfor %}
+							</table>
+						{% else %}
+						<h3> No submission assigned to you </h3>
+						{% endif %}
+						{% endblock %}
+                        
+                    </section>
+                    
+                </div>
+            </section>
+
+        
+        <!-- Footer -->
+            <footer id="footer">
+                <div class="copyright">
+                    &copy; Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>. Design: <a href="http://templated.co">TEMPLATED</a>.
+                </div>
+            </footer>
+
+        <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/skel.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+            <script src="assets/js/main.js"></script>
+
+    </body>
+</html>
