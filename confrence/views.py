@@ -3,7 +3,7 @@ from django.template.context_processors import request
 from django.http.response import HttpResponse, HttpResponseRedirect
 from confrence.models import RegisterForm, Confrence, Topic, Reviewr, Upload, Submission, ConfrenceEditForm,\
     Author, ReviewerEditForm, UploadForm, SubmissionForm, PaperSubmissionForm, PosterSubmissionForm,PaperSubmission, AssgReviewerForm,\
-    ReviewForm
+    PaymentGateway, ReviewForm, PaymentGateway, PaymentGatewayForm
 from django.contrib.auth.decorators import login_required
 from urllib2 import HTTPRedirectHandler
 from django.forms import formset_factory 
@@ -59,12 +59,13 @@ def register(request,confrenceid="-1"):
                 new_user.set_password(raw_paswd)
                 new_user.save()            
             return HttpResponseRedirect('/user/login/')
-    else:
-        form = RegisterForm()
-        if confrenceid == "-1":
-            return render(request,'registration/register.html',{'form':form})
         else:
-            return render(request,'registration/register.html',{'form':form,'confrenceid':confrenceid})
+            return HttpResponse(form.errors)
+    form = RegisterForm()
+    if confrenceid == "-1":
+        return render(request,'registration/register.html',{'form':form})
+    else:
+        return render(request,'registration/register.html',{'form':form,'confrenceid':confrenceid})
             
                 
 #Confrence specific Views
@@ -202,6 +203,21 @@ def reviewr_assg(request,confrenceid,topicid="-1"):
     
     return HttpResponseRedirect("/user/home") 
 
+#Payment Gateway
+def gateway_edit(request,confrenceid="-1"):
+    if confrenceid !="-1":
+        confrence_edit = Confrence.objects.get(id=confrenceid)    
+        if(confrence_edit and confrence_edit.organizer == request.user):
+            gatewayformset = inlineformset_factory(Confrence,PaymentGateway,form=PaymentGatewayForm)
+            if request.method == 'POST':
+                formset=gatewayformset(request.POST, request.FILES,instance=confrence_edit)
+                if formset.is_valid():
+                    formset.save()
+                    return  HttpResponseRedirect("/confrence/confrence_home"+"/"+`confrence_edit.id`)
+            else:
+                formset=gatewayformset(instance=confrence_edit)
+                return render(request,'payment/edit.html',{'formset':formset,'confrenceid':confrenceid})
+    return HttpResponseRedirect("/user/home")
 
 #Submission
 def submissions_home(request):

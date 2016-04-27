@@ -25,6 +25,10 @@ urlpatterns = [
     url(r'^confrence_edit/subUpload/(?P<confrenceid>[0-9]+)/$',views.submission_form),
     url(r'^confrence_edit/subUpload/(?P<confrenceid>[0-9]+)/(?P<submissiontype>[0-9]+)$',views.submission_form),
     
+    url(r'^confrence_edit/editGateway/$',views.gateway_edit,name='edit-gateway'),
+    url(r'^confrence_edit/editGateway/(?P<confrenceid>[0-9]+)/$',views.gateway_edit),
+    
+    
     url(r'^submissions_home/$',views.submissions_home,name='submissions-home'),
     url(r'^submissions_home/review/$',views.submissions_review,name='submissions-review'),
     url(r'^submissions_home/review/(?P<subid>[0-9]+)/$',views.submissions_review,),

@@ -67,7 +67,7 @@ class Submission(models.Model):
 class PaymentGateway(models.Model):
     confrence = models.ForeignKey(Confrence,on_delete = models.CASCADE)
     banklink = models.CharField(max_length=30,null=True)
-    bankName = models.CharField(max_length=20,null=True)
+    bankname = models.CharField(max_length=20,null=True)
     
 class PaperSubmission(Submission):
     filesize=models.IntegerField(null=True)
@@ -162,3 +162,8 @@ class ReviewForm(ModelForm):
     class Meta:
         model=Review
         fields=['comment','score']
+
+class PaymentGatewayForm(ModelForm):
+    class Meta:
+        model=PaymentGateway
+        fields=['banklink','bankname']
