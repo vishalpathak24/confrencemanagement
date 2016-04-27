@@ -57,7 +57,7 @@ class Submission(models.Model):
     topic = models.ForeignKey(Topic,on_delete = models.CASCADE,null=True)
     reviewed = models.BooleanField(default=False)
     type = models.CharField(max_length=30,null=True)
-    reviwer = models.ForeignKey(Reviewr,on_delete = models.SET_NULL,null=True)
+    reviewr = models.ForeignKey(Reviewr,on_delete = models.SET_NULL,null=True)
     
     def __str__(self):
         return self.title+" "+self.author.user.first_name+" "+self.confrence.__str__()
@@ -143,4 +143,4 @@ class PosterSubmissionForm(ModelForm):
 class AssgReviewerForm(ModelForm):
     class Meta:
         model = Submission
-        fields = ['reviewer']
+        fields = ['reviewr']

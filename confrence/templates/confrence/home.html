@@ -56,7 +56,7 @@
 	<!-- Edit option only for organizer of confrence --!>
 		<a href="{% url 'confrence-edit' %}{{confrence.id}}">Edit</a>
 		<a href="{% url 'reviewr-edit' %}{{confrence.id}}">Add remove Reviewer</a>
-		<a href="{% url 'reviewr-list' %}{{confrence.id}}">Assign Reviewer</a>
+		<a href="{% url 'reviewr-assgn' %}{{confrence.id}}">Assign Reviewer</a>
 	{% else %}
 		{% if review_option %}
 		<a href="{% url 'submissions-home' %}">Review Submissions</a>

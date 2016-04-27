@@ -148,10 +148,10 @@ def reviewr_edit(request,confrenceid="-1",authorid="-1"):
         return HttpResponseRedirect("/user/home")
 
 @login_required
-def reviewr_assg(request,confrenceid,topicid):
-    if request.session['is-org']:
+def reviewr_assg(request,confrenceid,topicid=-1):
+    if request.session['is-org']==True:
         confrence = Confrence.objects.get(id=confrenceid)
-        if confrence and confrence.id == confrenceid:
+        if confrence and confrence.organizer.id == request.user.id:
             reviewrformset = formset_factory(form=AssgReviewerForm,extra=0,can_delete=0)
             if request.method == 'POST':#need to assign reviewer
                 formset = reviewrformset(request.POST,request.FILES)
@@ -159,13 +159,16 @@ def reviewr_assg(request,confrenceid,topicid):
                     formset.save()
                     return HttpResponseRedirect("confrence_edit/assgnReviewr/"+`confrence.id`)
             else:
-                if topicid:
+                if topicid !=-1:
                     to_review_list = confrence.submission_set.filter(topic_id = topicid,reviewed = False) 
                     formset = reviewrformset(intial = to_review_list)
-                topics = confrence.topics_set.all()
-                return render(request,'confrence/assgreviewer.html',{'topics':topics,'to_review_list':to_review_list})
-    else:
-        return HttpResponseRedirect("/user/home") 
+                else:
+                    formset = False
+                    to_review_list = False
+                topics = confrence.topic_set.all()
+                return render(request,'confrence/assgreviewer.html',{'formset':formset,'topics':topics,'to_review_list':to_review_list,'confrenceid':confrenceid})
+    
+    return HttpResponseRedirect("/user/home") 
 
 
 #Submission

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if topics %}
+	<table border="1px">
+	{% for topic in topics %}
+		<tr><td><a href="{% url 'reviewr-assgn' %}{{confrenceid}}/{{topic.id}}">{{topic.topicName}}</a></td></td>
+	{% endfor %}
+	</table>
+{% endif %}
+<br>
+{% if to_review_list %}
+	<h2> Following are the Submissions </h2>
+	<form method="post" action="{% url 'confrence-edit' %}{{confrence.id}}/">
+	{% csrf_token %}
+	{{ formset.management_form }}
+	<table border="1px">
+		<tr> 
+			<td>Submission Name</td>
+			<td>Submission Topic</td>
+			<td>Submission Type</td>			
+			<td>Download Link</td>
+			<td>Reviewer</td>
+		</tr>
+	{% with i=0 %}	
+	{% for sub in to_review_list %}
+		<tr>
+			<td>{{sub.title}}</td> 
+			<td>{{sub.topic}}</td>
+			<td>{{sub.type}}</td>
+			<td><a href="{% url 'view-file' %}{{sub.id}}">Download</td>
+			{{formset.get(i).id}}
+			<td> {{ formset.get(i) }} </td>
+		</tr>
+		{{i|add:"1"}}
+	{% endfor %}		
+	</table>
+	<input type="submit" value="Assign" />
+</form>
+{% endblock %}
