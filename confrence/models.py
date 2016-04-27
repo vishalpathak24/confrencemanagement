@@ -141,6 +141,12 @@ class PosterSubmissionForm(ModelForm):
         fields = ['subFile','title','topic']
 
 class AssgReviewerForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AssgReviewerForm, self).__init__(*args,**kwargs)
+        self.fields['title'].widget.attrs['readonly'] = True
+        self.fields['topic'].widget.attrs['readonly'] = True
+        self.fields['type'].widget.attrs['readonly'] = True
+        
     class Meta:
         model = Submission
-        fields = ['reviewr']
+        fields = ['id','title','topic','type','reviewr']

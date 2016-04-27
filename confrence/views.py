@@ -12,6 +12,7 @@ from django.db.models.query import QuerySet
 from django import forms
 from Crypto.Random.random import choice
 import datetime
+from django.forms.widgets import Textarea, TextInput
 
 # Create your views here.
 def index(request):
@@ -148,25 +149,29 @@ def reviewr_edit(request,confrenceid="-1",authorid="-1"):
         return HttpResponseRedirect("/user/home")
 
 @login_required
-def reviewr_assg(request,confrenceid,topicid=-1):
+def reviewr_assg(request,confrenceid,topicid="-1"):
     if request.session['is-org']==True:
         confrence = Confrence.objects.get(id=confrenceid)
         if confrence and confrence.organizer.id == request.user.id:
-            reviewrformset = formset_factory(form=AssgReviewerForm,extra=0,can_delete=0)
+            reviewrformset = modelformset_factory(Submission,fields={'id','title','type','reviewr'},widgets={'title':TextInput(attrs={'readonly':True}),'title':TextInput(attrs={'readonly':True}),'type':TextInput(attrs={'readonly':True})},extra=0)          
             if request.method == 'POST':#need to assign reviewer
-                formset = reviewrformset(request.POST,request.FILES)
+                formset = reviewrformset(request.POST)
                 if formset.is_valid():
                     formset.save()
-                    return HttpResponseRedirect("confrence_edit/assgnReviewr/"+`confrence.id`)
+                    return HttpResponseRedirect("/confrence/confrence_edit/assgnReviewr/"+`confrence.id`)
             else:
-                if topicid !=-1:
+                if topicid != "-1":
                     to_review_list = confrence.submission_set.filter(topic_id = topicid,reviewed = False) 
-                    formset = reviewrformset(intial = to_review_list)
+                    formset = reviewrformset(queryset=confrence.submission_set.filter(topic_id = topicid,reviewed = False))
+                    if to_review_list:
+                        pass
+                    else:
+                        formset=-1
+                    #return HttpResponse("for topic id"+topicid)
                 else:
                     formset = False
-                    to_review_list = False
-                topics = confrence.topic_set.all()
-                return render(request,'confrence/assgreviewer.html',{'formset':formset,'topics':topics,'to_review_list':to_review_list,'confrenceid':confrenceid})
+                topics = confrence.topic_set.all()    
+                return render(request,'confrence/assgreviewer.html',{'confrence':confrence,'formset':formset,'topics':topics,'confrenceid':confrenceid})
     
     return HttpResponseRedirect("/user/home") 
 
@@ -179,13 +184,10 @@ def submissions_home(request):
         if myreviewr:
             topics = myreviewr.topics.all()
             #topicsid = [topic.id for topic in topics]
-            confrence = Confrence.objects.get(id = confrenceid)
-            to_review_list = confrence.submission_set.filter(topic__in = topics,reviewed = False)        
-            if to_review_list:
-                return render(request,'submission/home.html',{'to_review_list':to_review_list,'rev_topics':topics})
-            else:
-                return HttpResponse("Nothing to review");
-                
+            #confrence = Confrence.objects.get(id = confrenceid)
+            #to_review_list = confrence.submission_set.filter(topic__in = topics,reviewed = False)        
+            to_review_list = myreviewr.submission_set.all()
+            return render(request,'submission/home.html',{'to_review_list':to_review_list,'rev_topics':topics})    
     else:
         return HttpResponse("submission_home");
 
