@@ -24,5 +24,5 @@ urlpatterns = [
     url('^user/',include('django.contrib.auth.urls')),
     url('^user/',include(confrence.urls)),
     url('^confrence/',include(confrence.urls)),
-    
+    url('^easychair/',include(confrence.urls)),
 ]

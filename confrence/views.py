@@ -16,7 +16,7 @@ from django.forms.widgets import Textarea, TextInput
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello");
+    return render(request,'index.html',{});
 
 @login_required
 def home(request):
@@ -69,7 +69,9 @@ def confrence_home(request,confrenceid="-1"):
     if(organizer == request.user):
         edit_option=True;
         request.session['org-confrence']=confrence.id #Setting Session for confrence
-    
+    is_auth = False
+    if not(review_option or edit_option):
+        is_auth = True    
     if(confrence):
         return render(request,'confrence/home.html',{'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'review_option':review_option,'user':user})  
         

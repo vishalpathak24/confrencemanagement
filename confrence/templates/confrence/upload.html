@@ -1,22 +1,86 @@
-{% extends "base.html" %}
 
-{% block content %}
-{{submissiontype}}
-{% if submissiontype == "1" %}
 
-<h2>Paper addition</h2>
+<!DOCTYPE HTML>
+<!--
+    Prism by TEMPLATED
+    templated.co @templatedco
+    Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+{% load staticfiles %}
+<html>
+    <head>
+        <title> </title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+        <link rel="stylesheet" href="{% static "css/main.css" %}"/>
+        <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+    </head>
+    <body>
 
-{% else %}
+        <!-- Banner -->
+            <section id="banner">
+                <div class="inner split">
+                    <section>
+                        <h2> EasyChair <br> submission in conference</h2>
+                    </section>
+                    <section>
+                        <p> </p>
+                        <ul class="actions">
+                            <li><a href="/user/logout" class="button special">Logout</a></li>
+                        </ul>
+                    </section>
+                </div>
+            </section>
 
-<h2>Poster Submission</h2>
-{% endif %}
-{% if form.errors %}
-{{form.errors}}
-{% endif %}
-<form method="post" enctype="multipart/form-data" action="{% url 'sub-upload' %}{{confrence.id}}/{{submissiontype}}">
-{% csrf_token %}
-{{form}}
-<input type="submit" value="upload" />
-</form>
+        <!-- One -->
+            <section id="one" class="wrapper">
+                <div class="inner split">
+                    <section>
+                        Welcome user
+                       {% block content %}
+							{{user.username}}
+							<br>Submission for Conference<br>
+							{{confrence}}
+							{% if submissiontype == "1" %}
 
-{% endblock %}
+							<h3>Paper Submission</h3>
+
+							{% else %}
+
+							<h3>Poster Submission</h3>
+							{% endif %}
+							{% if form.errors %}
+							{{form.errors}}
+							{% endif %}
+							<form method="post" enctype="multipart/form-data" action="{% url 'sub-upload' %}{{confrence.id}}/{{submissiontype}}">
+							{% csrf_token %}
+							File Upload{{form.subFile}}<br>
+							Title{{form.title}}<br>
+							Choose Topics{{form.topic}}
+							<input type="submit" value="upload" />
+							</form>
+
+						{% endblock %}
+                    </section>
+                    
+                </div>
+            </section>
+
+        
+        <!-- Footer -->
+            <footer id="footer">
+                <div class="copyright">
+                    &copy; Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>. Design: <a href="http://templated.co">TEMPLATED</a>.
+                </div>
+            </footer>
+
+        <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/skel.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+            <script src="assets/js/main.js"></script>
+
+    </body>
+</html>
