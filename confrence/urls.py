@@ -32,6 +32,12 @@ urlpatterns = [
     url(r'^downloadsub/$',views.view_file,name='view-file'),
     url(r'^downloadsub/(?P<submissionid>[0-9]+)/$',views.view_file,name='view-file'),
     url(r'^viewsub/$',views.view_file1,name='view-file1'),
-    url(r'^viewsub/(?P<confrenceid>[0-9]+)/$',views.view_file1,name='view-file1')
+    url(r'^viewsub/(?P<confrenceid>[0-9]+)/$',views.view_file1,name='view-file1'),
+    url(r'^chairadd/$',views.chair_add,name='chair-add'),
+    url(r'^chairadd/(?P<confrenceid>[0-9]+)/$',views.chair_add,name='chair-add'),
 
+    url(r'^pcchair/$',views.accept_reject,name='accept-reject'),
+    url(r'^pcchair/(?P<confrenceid>[0-9]+)/$',views.accept_reject,name='chair-add'),
+    url(r'^chairaction/$',views.chair_action,name='chair-action'),
+    url(r'^chairaction/(?P<submissionid>[0-9]+)/$',views.chair_action,name='chair-action'),
 ]

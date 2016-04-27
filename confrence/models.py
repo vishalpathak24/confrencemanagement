@@ -11,10 +11,10 @@ from twisted.protocols.amp import MAX_VALUE_LENGTH
 class Confrence(models.Model):
     confrenceName = models.CharField(max_length=30)
     organizer = models.ForeignKey(User,on_delete = models.SET_NULL,null=True)
-    pcChair = models.ForeignKey(User,on_delete = models.SET_NULL,related_name='+',null=True)
+    pcChair = models.ForeignKey(User,on_delete = models.SET_NULL,related_name='+',null=True,blank=True)
     startDate = models.DateField(blank=False)
     endDate = models.DateField(blank=False)
-        
+    notifyDate = models.DateField(blank=False,null=True)    
     def __str__(self):
         return self.confrenceName
 
@@ -58,7 +58,8 @@ class Submission(models.Model):
     reviewed = models.BooleanField(default=False)
     type = models.CharField(max_length=30,null=True)
     reviewr = models.ForeignKey(Reviewr,on_delete = models.SET_NULL,null=True)
-    
+    acceptance = models.BooleanField(default=False)
+    final_comment = models.CharField(max_length=30,null=True)
     def __str__(self):
         return self.title+" "+self.author.user.first_name+" "+self.confrence.__str__()
 
@@ -155,3 +156,8 @@ class ReviewForm(ModelForm):
     class Meta:
         model=Review
         fields=['comment','score']
+
+class PcChairAssignForm(ModelForm):
+    class Meta:
+        model = Confrence
+        fields = ['pcChair']
