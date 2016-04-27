@@ -1,73 +1,151 @@
-{% extends "base.html" %}
 
-{% block content %}
-{% if confrence %}
-	
-	<h2>Confrence on {{confrence.confrenceName}} </h2>
-	<br>
-	<h3> Important Details of confrence </h3> 
-	<table>
-		<tr>
-			<td>Confrence Name:</td>
-			<td>{{confrence.confrenceName}}</td>
-		<tr>
-			<td>Starting Date:</td>
-			<td>{{confrence.startDate}}</td>
-		<tr>
-			<td>End Date: </td>
-			<td>{{confrence.endDate}}</td>
-		<tr>
-			<td>Organizer Name:</td>
-			<td>{{organizer.first_name}} {{organizer.last_name}}</td>
-		<tr>
-			<td>Organizer Email:</td>
-			<td>{{organizer.email}}</td>
-	</table>
-	<br>
-	
-	{% if topics %}
-		<h3> Topics covered in confrence </h3>
-		<table>
-		{% for topic in topics %}
-			<tr><td>{{topic.topicName}}</td></tr>
-		{% endfor %}
-		</table>
-	{% else %}
-		<h3> None of the topics has been added by organizer </h3>
-	{% endif %}
-	
-	<br>
-	{% if reviewrs %}
-		<h3>Reviewers in Confrence </h3>
-		<table>		
-		{% for reviewr in reviewrs %}
-			<tr><td>{{reviewr.first_name}}</td></tr>
-		{% endfor %}
-		</table>
-	{% else %}
-		<h3> none reviewers </h3>
-	{% endif %}
-	
-	
-	<br>
 
-	{% if is_auth %}
-		<h3><a href="{% url 'sub-upload' %}{{confrence.id}}/1">Paper Submission for conference</a><h3><br>
-		<h3><a href="{% url 'sub-upload' %}{{confrence.id}}/2">Poster Submission for conference</a><h3><br>
-		<a href="{% url 'view-file1' %}{{confrence.id}}">view your submission</a>
-	{% endif %}
-	
-	{% if edit_option %} 
-	<!-- Edit option only for organizer of confrence --!>
-		<a href="{% url 'confrence-edit' %}{{confrence.id}}">Edit</a>
-		<a href="{% url 'reviewr-edit' %}{{confrence.id}}">Add remove Reviewer</a>
-	{% endif %}
-	
-	{% if review_option %}
-		<a href="{% url 'submissions-home' %}">Review Submissions</a>
-	{% endif %}
-	
-{% else %}
-<h2> Confrence Undefined </h2>
-{% endif %}
-{% endblock %}
+
+
+<!DOCTYPE HTML>
+<!--
+    Prism by TEMPLATED
+    templated.co @templatedco
+    Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+{% load staticfiles %}
+<html>
+    <head>
+        <title>Easy Chair Login </title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+        <link rel="stylesheet" href="{% static "css/main.css" %}"/>
+        <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+    </head>
+    <body>
+
+        <!-- Banner -->
+            <section id="banner">
+                <div class="inner split">
+                    <section>
+                        <h2> Confrence home page
+                        	<br></h2>
+                        	<h3> <font color="white"> </font></h3>
+                    </section>
+                    <section>
+                        <p></p>
+                        <ul class="actions">
+                            <li><a href="/user/logout" class="button special">Logout</a></li>
+                        </ul>
+                    </section>
+                </div>
+            </section>
+
+        <!-- One -->
+            <section id="one" class="wrapper">
+                <div class="inner split">
+                    <section>
+                        Welcome User
+                        {% block content %}
+						{% if confrence %}
+							{{user.username}}
+							<h2>Confrence on {{confrence.confrenceName}} </h2>
+							<br>
+							<h3> Important Details of confrence </h3> 
+							<table>
+								<tr>
+									<td>Confrence Name:</td>
+									<td>{{confrence.confrenceName}}</td>
+								<tr>
+									<td>Starting Date:</td>
+									<td>{{confrence.startDate}}</td>
+								<tr>
+									<td>End Date: </td>
+									<td>{{confrence.endDate}}</td>
+								<tr>
+									<td>Organizer Name:</td>
+									<td>{{organizer.first_name}} {{organizer.last_name}}</td>
+								<tr>
+									<td>Organizer Email:</td>
+									<td>{{organizer.email}}</td>
+							</table>
+							<br>
+							
+							
+							
+							<br>
+							{% if reviewrs %}
+								<h3>Reviewers in Confrence </h3>
+								<table>		
+								{% for reviewr in reviewrs %}
+									<tr><td>{{reviewr.first_name}}</td></tr>
+								{% endfor %}
+								</table>
+							{% else %}
+								<h3> none reviewers </h3>
+							{% endif %}
+							
+							
+							<br>
+
+							{% if is_auth %}
+								
+								<ul class="actions">
+								<li><a href="{% url 'sub-upload' %}{{confrence.id}}/1" class="button special">Paper Submission</a></li>
+								<li><a href="{% url 'sub-upload' %}{{confrence.id}}/2" class="button special">Poster Submission</a></li></ul>
+								<ul class="actions">
+								<li><a href="{% url 'view-file1' %}{{confrence.id}}" class="button special">View Submissions</a></li>
+							    </ul>
+							{% endif %}
+							
+							{% if edit_option %} 
+							    <ul class="actions">
+								<li><a href="{% url 'confrence-edit' %}{{confrence.id}}" class="button special">Edit Conference</a></li>
+								<li><a href="{% url 'reviewr-edit' %}{{confrence.id}}" class="button special">Add/Remove Reviewer</a></li>
+							    </ul>
+								
+							{% endif %}
+							
+							{% if review_option %}
+								<ul class="actions">
+								<li><a href="{% url 'submissions-home' %}" class="button special">Review Submissions</a></li>								
+							    </ul>
+
+							{% endif %}
+							
+						{% else %}
+						<h2> Confrence Undefined </h2>
+						{% endif %}
+					</section>
+					<section>
+						{% if topics %}<br><br><br><br>
+								<h3> Topics covered in confrence </h3>
+								<table>
+								{% for topic in topics %}
+									<tr><td>{{topic.topicName}}</td></tr>
+								{% endfor %}
+								</table>
+							{% else %}
+								<h3> None of the topics has been added by organizer </h3>
+						{% endif %}
+						<a href="{% url 'user-home' %}" class="button special">User Home</a>
+						{% endblock %}
+
+                    </section>
+                    
+                </div>
+            </section>
+
+        
+        <!-- Footer -->
+            <footer id="footer">
+                <div class="copyright">
+                    &copy; Untitled. All rights reserved. Images: <a href="http://unsplash.com">Unsplash</a>. Design: <a href="http://templated.co">TEMPLATED</a>.
+                </div>
+            </footer>
+
+        <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/skel.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+            <script src="assets/js/main.js"></script>
+
+    </body>
+</html>

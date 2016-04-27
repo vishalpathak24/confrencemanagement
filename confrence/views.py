@@ -14,7 +14,7 @@ import datetime
 
 # Create your views here.
 def index(request):
-    return HttpResponse("Hello");
+    return render(request,'index.html',{});
 
 @login_required
 def home(request):
@@ -53,6 +53,7 @@ def confrence_home(request,confrenceid="-1"):
     author_user=[]
     reviewr_user=[]
     #Changing options on Basis of user privilages
+    """
     is_auth=False
     if authors:
         for author in authors:
@@ -60,7 +61,7 @@ def confrence_home(request,confrenceid="-1"):
                 is_auth=True
             author_user.append(author.user) #if author exist find user for this author
         authors = author_user #if author exist find user for this author
-    
+    """
     review_option = False;
     if reviewrs:	
         for reviewr in reviewrs:
@@ -74,7 +75,9 @@ def confrence_home(request,confrenceid="-1"):
     if(organizer == request.user):
         edit_option=True;
         request.session['org-confrence']=confrence.id #Setting Session for confrence
-    
+    is_auth = False
+    if not(review_option or edit_option):
+        is_auth = True    
     if(confrence):
         return render(request,'confrence/home.html',{'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'review_option':review_option,'user':user,'is_auth':is_auth})  
         
@@ -191,17 +194,17 @@ def submission_form(request,confrenceid="-1",submissiontype="-1"):
 	    upload=form.save(commit=False)
 	    upload.author = aut
 	    upload.confrence = confrence
-        upload.reviewed = False
-        upload.status = "Submitted"
-        upload.upl_date = datetime.date.today()
-        upload.save()  
-        return HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
+            upload.reviewed = False
+            upload.status = "Submitted"
+            upload.upl_date = datetime.date.today()
+            upload.save()  
+            return HttpResponseRedirect("/confrence/confrence_home"+"/"+`confrence.id`)
     if submissiontype == "1":
     	form=PaperSubmissionForm()
     if submissiontype == "2":
         form=PosterSubmissionForm()
     form.fields['topic'].queryset = confrence.topic_set.all()
-    return render(request,'confrence/upload.html',{'form':form,'confrence':confrence,'submissiontype':submissiontype})
+    return render(request,'confrence/upload.html',{'form':form,'confrence':confrence,'submissiontype':submissiontype,'user':user})
     return HttpResponse("this is not good"+str(submissiontype)+str(submissiontype == "1"))
     
    
