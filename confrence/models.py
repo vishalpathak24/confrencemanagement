@@ -4,6 +4,7 @@ from django.forms.models import ModelForm
 from django.template.defaultfilters import default
 from django import forms
 from twisted.protocols.amp import MAX_VALUE_LENGTH
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
  
 
@@ -11,9 +12,10 @@ from twisted.protocols.amp import MAX_VALUE_LENGTH
 class Confrence(models.Model):
     confrenceName = models.CharField(max_length=30)
     organizer = models.ForeignKey(User,on_delete = models.SET_NULL,null=True)
-    pcChair = models.ForeignKey(User,on_delete = models.SET_NULL,related_name='+',null=True)
+    pcChair = models.ForeignKey(User,on_delete = models.SET_NULL,related_name='+',blank=True,null=True)
     startDate = models.DateField(blank=False)
     endDate = models.DateField(blank=False)
+    accountNo = models.IntegerField(validators=[MinValueValidator(10000000),MaxValueValidator(99999999)],null=True)
         
     def __str__(self):
         return self.confrenceName
@@ -62,6 +64,11 @@ class Submission(models.Model):
     def __str__(self):
         return self.title+" "+self.author.user.first_name+" "+self.confrence.__str__()
 
+class PaymentGateway(models.Model):
+    confrence = models.ForeignKey(Confrence,on_delete = models.CASCADE)
+    banklink = models.CharField(max_length=30,null=True)
+    bankName = models.CharField(max_length=20,null=True)
+    
 class PaperSubmission(Submission):
     filesize=models.IntegerField(null=True)
     

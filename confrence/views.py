@@ -36,15 +36,14 @@ def home(request):
     
 
 
-def register(request,confrenceid="-1"):
-    if confrenceid != "-1":
-        if request.method == 'POST':
-            #return HttpResponse("in POST")
-            form = RegisterForm(request.POST)
-            if form.is_valid():
+def register(request,confrenceid="-1"):    
+    if request.method == 'POST':
+        #return HttpResponse("in POST")
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            if confrenceid != "-1":
                 confrence = Confrence.objects.get(id=confrenceid)
                 if confrence:
-                    #return HttpResponse("in confrence")
                     new_user = form.save(commit=False)
                     raw_paswd = new_user.password
                     new_user.set_password(raw_paswd)
@@ -53,15 +52,21 @@ def register(request,confrenceid="-1"):
                     author.user = new_user
                     author.confrence = confrence
                     author.save()
-                return HttpResponseRedirect('/user/login/')
+            else:
+                #Easy chair user registration
+                new_user = form.save(commit=False)
+                raw_paswd = new_user.password
+                new_user.set_password(raw_paswd)
+                new_user.save()            
+            return HttpResponseRedirect('/user/login/')
+    else:
+        form = RegisterForm()
+        if confrenceid == "-1":
+            return render(request,'registration/register.html',{'form':form})
         else:
-            form = RegisterForm()
             return render(request,'registration/register.html',{'form':form,'confrenceid':confrenceid})
-        
-    form = RegisterForm()            
-    return render(request,'registration/register.html',{'form':form})
-
-
+            
+                
 #Confrence specific Views
 
 @login_required

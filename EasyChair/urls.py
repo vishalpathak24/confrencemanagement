@@ -21,6 +21,7 @@ import confrence.urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^user/logout/$', 'django.contrib.auth.views.logout',{'next_page': '/user/login'}),
     url('^user/',include('django.contrib.auth.urls')),
     url('^user/',include(confrence.urls)),
     url('^confrence/',include(confrence.urls)),
