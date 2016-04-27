@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if form %}
+<h2> Welcome Reviewer Enter your Review </h2>
+<form method="post" action="{% url 'submissions-review' %}{{submissionid}}/">
+		{% csrf_token %}
+		{{form}}
+	<input type="submit" value="Submit Review" />
+</form>		
+{% endif %}
+{% endblock %}

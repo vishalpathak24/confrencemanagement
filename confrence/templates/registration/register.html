@@ -44,7 +44,11 @@
 							{% if form.errors %}
 							{{form.errors}}
 							{% endif %}
-							<form method="post" action="{% url 'user-register' %}">
+							{% if confrenceid %}
+								<form method="post" action="{% url 'user-register' %}{{confrenceid}}/">
+							{% else %}
+								<form method="post" action="{% url 'user-register' %}">
+							{% endif %}
 							{% csrf_token %}
 							{{form}}
 							<br>

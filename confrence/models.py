@@ -150,3 +150,8 @@ class AssgReviewerForm(ModelForm):
     class Meta:
         model = Submission
         fields = ['id','title','topic','type','reviewr']
+
+class ReviewForm(ModelForm): 
+    class Meta:
+        model=Review
+        fields=['comment','score']

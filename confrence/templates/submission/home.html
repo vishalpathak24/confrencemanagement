@@ -31,7 +31,7 @@
 		<td>{{sub.topic}}</td>
 		<td>{{sub.type}}</td>
 		<td><a href="{% url 'view-file' %}{{sub.id}}">Download</td>
-		<td><a href="">Review</td>
+		<td><a href="{% url 'submissions-review' %}{{sub.id}}">Review</td>
 	</tr>
 	{% endfor %}
 	</table>
