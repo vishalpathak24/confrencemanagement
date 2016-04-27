@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.template.context_processors import request
 from django.http.response import HttpResponse, HttpResponseRedirect
 from confrence.models import RegisterForm, Confrence, Topic, Reviewr, Upload, Submission, ConfrenceEditForm,\
-    Author, ReviewerEditForm, UploadForm, SubmissionForm, PaperSubmissionForm, PosterSubmissionForm
+    Author, ReviewerEditForm, UploadForm, SubmissionForm, PaperSubmissionForm, PosterSubmissionForm,PaperSubmission, AssgReviewerForm
 from django.contrib.auth.decorators import login_required
 from urllib2 import HTTPRedirectHandler
+from django.forms import formset_factory 
 from django.forms.models import modelformset_factory, inlineformset_factory,\
     modelform_factory
 from django.db.models.query import QuerySet
@@ -19,6 +20,8 @@ def index(request):
 @login_required
 def home(request):
     org_confrences = Confrence.objects.filter(organizer_id=request.user.id)
+    if org_confrences:
+        request.session['is-org']=True
     my_reviwers = Reviewr.objects.filter(user_id=request.user.id)
     rev_confrences = [ my_reviewer.confrence for my_reviewer in my_reviwers]
     all_confrences = Confrence.objects.all()
@@ -47,20 +50,11 @@ def confrence_home(request,confrenceid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
     organizer = confrence.organizer
     topics = confrence.topic_set.all()
-    authors = confrence.author_set.all()
     reviewrs= confrence.reviewr_set.all()
     user=request.user
     author_user=[]
     reviewr_user=[]
     #Changing options on Basis of user privilages
-    is_auth=False
-    if authors:
-        for author in authors:
-            if author.user.username == user.username:
-                is_auth=True
-            author_user.append(author.user) #if author exist find user for this author
-        authors = author_user #if author exist find user for this author
-    
     review_option = False;
     if reviewrs:	
         for reviewr in reviewrs:
@@ -76,7 +70,7 @@ def confrence_home(request,confrenceid="-1"):
         request.session['org-confrence']=confrence.id #Setting Session for confrence
     
     if(confrence):
-        return render(request,'confrence/home.html',{'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'review_option':review_option,'user':user,'is_auth':is_auth})  
+        return render(request,'confrence/home.html',{'confrence':confrence,'topics':topics,'organizer':organizer,'authors':author_user,'reviewrs':reviewrs,'edit_option':edit_option,'review_option':review_option,'user':user})  
         
     return HttpResponseRedirect("/user/home")
 
@@ -137,23 +131,42 @@ def reviewr_edit(request,confrenceid="-1",authorid="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
     organizer = confrence.organizer
     user=request.user
+    reviewerFormSet = inlineformset_factory(Confrence,Reviewr,form=ReviewerEditForm)#fields=('user','topics'))#,queryset={"topics":confrence.topic_set.all()})
     if(confrence and organizer == request.user):
         if request.method == 'POST':      
-            form=ReviewerEditForm('-1',user,request.POST)
-            if form.is_valid():
-                reviewr = form.save(commit=False)
-                reviewr.confrence = confrence
-                reviewr.save()
-                form.save_m2m()
+            formset=reviewerFormSet(request.POST, request.FILES,instance=confrence)#ReviewerEditForm('-1',user,request.POST)
+            if formset.is_valid():
+                formset.save()
                 return  HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
         else:
-            form=ReviewerEditForm(confrence,user)
-               
-        form.fields['user'].queryset = form.fields['user'].queryset.exclude(username=user.username)
-        form.fields['user'].queryset = form.fields['user'].queryset.exclude(username='admin')
-        return render(request,'confrence/revieweredit.html',{'form':form,'confrence':confrence})
+            formset=reviewerFormSet(form_kwargs={'confrence': confrence,'current_user':user},instance=confrence)#ReviewerEditForm(confrence,user)
+              
+        #form.fields['user'].queryset = form.fields['user'].queryset.exclude(username=user.username)
+        #form.fields['user'].queryset = form.fields['user'].queryset.exclude(username='admin')
+        return render(request,'confrence/revieweredit.html',{'formset':formset,'confrence':confrence})
     else:           
         return HttpResponseRedirect("/user/home")
+
+@login_required
+def reviewr_assg(request,confrenceid,topicid):
+    if request.session['is-org']:
+        confrence = Confrence.objects.get(id=confrenceid)
+        if confrence and confrence.id == confrenceid:
+            reviewrformset = formset_factory(form=AssgReviewerForm,extra=0,can_delete=0)
+            if request.method == 'POST':#need to assign reviewer
+                formset = reviewrformset(request.POST,request.FILES)
+                if formset.is_valid():
+                    formset.save()
+                    return HttpResponseRedirect("confrence_edit/assgnReviewr/"+`confrence.id`)
+            else:
+                if topicid:
+                    to_review_list = confrence.submission_set.filter(topic_id = topicid,reviewed = False) 
+                    formset = reviewrformset(intial = to_review_list)
+                topics = confrence.topics_set.all()
+                return render(request,'confrence/assgreviewer.html',{'topics':topics,'to_review_list':to_review_list})
+    else:
+        return HttpResponseRedirect("/user/home") 
+
 
 #Submission
 def submissions_home(request):
@@ -164,9 +177,9 @@ def submissions_home(request):
             topics = myreviewr.topics.all()
             #topicsid = [topic.id for topic in topics]
             confrence = Confrence.objects.get(id = confrenceid)
-            toreview_list = confrence.submission_set.filter(topic__in = topics,reviewed = False)
-            if(toreview_list):
-                return HttpResponse("To review List is present");
+            to_review_list = confrence.submission_set.filter(topic__in = topics,reviewed = False)        
+            if to_review_list:
+                return render(request,'submission/home.html',{'to_review_list':to_review_list,'rev_topics':topics})
             else:
                 return HttpResponse("Nothing to review");
                 
@@ -177,31 +190,33 @@ def submission_form(request,confrenceid="-1",submissiontype="-1"):
     confrence = Confrence.objects.get(id=confrenceid)
     user=request.user
     if submissiontype == "-1":
-       return HttpResponse(" Form type is not correct")
+        return HttpResponse(" Form type is not correct")
     if request.method=="POST":
         if submissiontype == "1":
-	   form = PaperSubmissionForm(request.POST, request.FILES)
-	if submissiontype == "2":
-	   form = PosterSubmissionForm(request.POST, request.FILES)      
+            form = PaperSubmissionForm(request.POST, request.FILES)
+        if submissiontype == "2":
+            form = PosterSubmissionForm(request.POST, request.FILES)
         if form.is_valid():
-	    aut = Author()
-	    aut.user = request.user
-	    aut.confrence = confrence
-	    aut.save()
-	    upload=form.save(commit=False)
-	    upload.author = aut
-	    upload.confrence = confrence
-        upload.reviewed = False
-        upload.status = "Submitted"
-        upload.upl_date = datetime.date.today()
-        upload.save()  
-        return HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
-    if submissiontype == "1":
-    	form=PaperSubmissionForm()
-    if submissiontype == "2":
-        form=PosterSubmissionForm()
-    form.fields['topic'].queryset = confrence.topic_set.all()
-    return render(request,'confrence/upload.html',{'form':form,'confrence':confrence,'submissiontype':submissiontype})
+            aut = Author()
+            aut.user = request.user
+            aut.confrence = confrence
+            aut.save()
+            upload=form.save(commit=False)
+            upload.author = aut
+            upload.confrence = confrence
+            upload.reviewed = False
+            upload.status = "Submitted"
+            upload.upl_date = datetime.date.today()
+            upload.type = form.type
+            upload.save()  
+            return HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
+    else:
+        if submissiontype == "1":
+            form=PaperSubmissionForm()
+        if submissiontype == "2":
+            form=PosterSubmissionForm()
+        form.fields['topic'].queryset = confrence.topic_set.all()
+        return render(request,'confrence/upload.html',{'form':form,'confrence':confrence,'submissiontype':submissiontype})
     return HttpResponse("this is not good"+str(submissiontype)+str(submissiontype == "1"))
     
    
@@ -214,12 +229,10 @@ def view_file1(request,confrenceid="-1"):
 
 def view_file(request,submissionid="-1"):
     if submissionid == "-1":
-	return HttpResponse("sorry this file not found")
+        return HttpResponse("sorry this file not found")
     else:
-	
-	fls=Submission.objects.get(id=submissionid)
+        fls=Submission.objects.get(id=submissionid)
         filename = fls.subFile.name.split('/')[-1]
         response = HttpResponse(fls.subFile, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         return response
-	

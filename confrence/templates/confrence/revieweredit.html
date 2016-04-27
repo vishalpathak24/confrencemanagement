@@ -7,7 +7,13 @@
 {% endif %}
 <form method="post" action="{% url 'reviewr-edit' %}{{confrence.id}}/">
 {% csrf_token %}
-{{form}}
+{{ formset.management_form }}
+<table border='1px'>
+	{% for form in formset %}         
+	      {{ form.id }}
+	<tr><td>{{ form }}</td></tr>
+	{% endfor %}
+</table>
 <input type="submit" value="Add/Edit" />
 </form>
 

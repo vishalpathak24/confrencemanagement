@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>
+{% if rev_topics %}
+	Welcome reviewer of confrence <br> Your topics are :
+</h2>
+	<table>
+	{% for topic in rev_topics %}
+	<tr><td>{{topic.topicName}}</td></tr>
+	{% endfor %}
+	</table>	
+{% else %}
+	Welcome organizer of confrence
+</h2>
+{% endif %} 
+
+{% if to_review_list %}
+<h3> Following are submissions to review </h3>
+	<table border="1px">
+	<tr>
+		<td>Title</td> 
+		<td>Topic</td>
+		<td>Type</td>
+		<td>Download Link</td>
+		<td>Review</td>
+	</tr>
+	{% for sub in to_review_list %}
+	<tr>
+		<td>{{sub.title}}</td> 
+		<td>{{sub.topic}}</td>
+		<td>{{sub.type}}</td>
+		<td><a href="{% url 'view-file' %}{{sub.id}}">Download</td>
+		<td><a href="">Review</td>
+	</tr>
+	{% endfor %}
+	</table>	
+{% endif %}
+{% endblock %}
