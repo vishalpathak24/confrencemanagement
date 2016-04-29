@@ -3,7 +3,8 @@ from django.template.context_processors import request
 from django.http.response import HttpResponse, HttpResponseRedirect
 from confrence.models import RegisterForm, Confrence, Topic, Reviewr, Upload, Submission, ConfrenceEditForm,\
     Author, ReviewerEditForm, UploadForm, SubmissionForm, PaperSubmissionForm, PosterSubmissionForm,PaperSubmission, AssgReviewerForm,\
-    PaymentGateway, ReviewForm, PaymentGateway, PaymentGatewayForm
+    PaymentGateway, ReviewForm, PaymentGateway, PaymentGatewayForm, ReviewForm, PcChairAssignForm
+    
 from django.contrib.auth.decorators import login_required
 from urllib2 import HTTPRedirectHandler
 from django.forms import formset_factory 
@@ -303,3 +304,30 @@ def view_file(request,submissionid="-1"):
         response = HttpResponse(fls.subFile, content_type='text/plain')
         response['Content-Disposition'] = 'attachment; filename=%s' % filename
         return response
+
+def chair_add(request,confrenceid="-1"):
+    confrence = Confrence.objects.get(id=confrenceid)
+    if request.method == "POST":
+        form = PcChairAssignForm(request.POST)
+        if form.is_valid():
+            confrence1 = form.save(commit=False)
+            confrence.pcChair=confrence1.pcChair
+            confrence.save()
+            return HttpResponseRedirect("/confrence/home"+"/"+`confrence.id`)
+    form = PcChairAssignForm(request.POST)
+    reviewrs= confrence.reviewr_set.all()
+    form.fields['pcChair'].queryset=form.fields['pcChair'].queryset.exclude(username='admin')
+    form.fields['pcChair'].queryset=form.fields['pcChair'].queryset.exclude(username=request.user.username)
+    return render(request,'confrence/pcChair.html',{'confrence':confrence,'form':form})
+
+def accept_reject(request,confrenceid="-1"):
+    confrence = Confrence.objects.get(id=confrenceid)
+    if confrence.pcChair == request.user:
+        submission = confrence.submission_set.all()
+    return render(request,'confrence/accept.html',{'submission':submission,'confrence':confrence})
+
+def chair_action(request,submissionid="-1"):
+    submission=Submission.objects.get(id=submissionid)
+    review = submission.review_set.all()
+
+    return render(request,'confrence/chairaction.html',{'submission':submission,'review':review})

@@ -89,27 +89,20 @@
 							{% endif %}
 						</section>
 						<section>
-							<!----
+							
 							{% if all_confrences %}
-								<br>
-								<h3> All Confrences </h3>
-								<table border = '1px'>
-									<tr>
-										<td>Confrence</td>
-										<td>StartDate</td>
-										<td>EndDate</td>
-										<td>Register</td>
-									</tr>
+								
 								{% for all_confrence in all_confrences %}
 									<tr>
+										{% if all_confrence.pcChair == request.user %}
+										PC Chair of
 										<td><a href="{% url 'confrence-home' %}{{all_confrence.id}}">{{all_confrence.confrenceName}}</a></td>
-										<td>{{all_confrence.startDate|date:"D d M Y"}}</td>
-										<td>{{all_confrence.endDate|date:"D d M Y"}}</td>
-										<td><a href="{% url 'sub-upload' %}{{all_confrence.id}}/1">Add Submission</a></td>
+										
+										{% endif %}
 									</tr>
 								{% endfor %}
 								</table>
-							{% endif %}  -->
+							{% endif %}  
 
 							{% endblock %}
 

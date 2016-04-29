@@ -16,7 +16,7 @@ class Confrence(models.Model):
     startDate = models.DateField(blank=False)
     endDate = models.DateField(blank=False)
     accountNo = models.IntegerField(validators=[MinValueValidator(10000000),MaxValueValidator(99999999)],null=True)
-        
+    notifyDate = models.DateField(blank=False,null=True)    
     def __str__(self):
         return self.confrenceName
 
@@ -60,7 +60,8 @@ class Submission(models.Model):
     reviewed = models.BooleanField(default=False)
     type = models.CharField(max_length=30,null=True)
     reviewr = models.ForeignKey(Reviewr,on_delete = models.SET_NULL,null=True)
-    
+    acceptance = models.BooleanField(default=False)
+    final_comment = models.CharField(max_length=30,null=True)
     def __str__(self):
         return self.title+" "+self.author.user.first_name+" "+self.confrence.__str__()
 
@@ -167,3 +168,8 @@ class PaymentGatewayForm(ModelForm):
     class Meta:
         model=PaymentGateway
         fields=['banklink','bankname']
+
+class PcChairAssignForm(ModelForm):
+    class Meta:
+        model = Confrence
+        fields = ['pcChair']
