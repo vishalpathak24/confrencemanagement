@@ -21,6 +21,5 @@ Language Python-2.7, with Django-1.9 framework
 ### Who do I talk to? ###
 
 * For Admin login and creation of conference in website contact authors.
-*
 * If you are interested and want to contribute this project further contact 
 Anuraj: h2015188@pilani.bits-pilani.ac.in or Vishal : h2010098@pilani.bits-pilani.ac.in
